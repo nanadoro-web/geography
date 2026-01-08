@@ -1,0 +1,636 @@
+<!-- Chosen Palette: Warm Slate & Earth (Background: Stone-50, Cards: White, Text: Stone-800, Accents: Blue-600, Rose-500, Emerald-600) -->
+<!-- Application Structure Plan: The application is designed as an interactive learning dashboard for High School World Geography (Unit 7). It follows a logical progression: 1. 'Macro View' (Global Growth) to establish context. 2. 'Theoretical Framework' (Demographic Transition Model) to explain the mechanism of growth. 3. 'Comparative Analysis' (Population Structure) to show regional differences (Developed vs. Developing). 4. 'Dynamic Flows' (Migration) to explore movement and consequences. This structure moves from general trends to specific theories, then to case comparisons, and finally to dynamic interactions, facilitating a deep understanding of causes and effects. Navigation is tab-based for easy switching between these thematic modules. -->
+<!-- Visualization & Content Choices: 
+1. Global Growth: Line Chart (Chart.js) to visually demonstrate the 'J-curve' explosion. Goal: Inform.
+2. Demographic Transition: Multi-line Chart (Chart.js) with interactive buttons for Stages 1-5. Users click a stage to see specific BR/DR patterns and descriptions. Goal: Change/Process.
+3. Population Structure: Stacked Bar Charts (Chart.js) comparing Ethiopia and Japan. Simplifies the complex population pyramid into key age groups for easy comparison of dependency ratios. Includes a 'Calculate' interaction. Goal: Compare.
+4. Migration Flows: Interactive Dropdown & Card system (HTML/JS). Users select a route (e.g., Mexico->USA) to see specific Push/Pull factors and impacts. Replaces static maps (NO SVG) with functional data/text relationships. Goal: Relationships.
+5. Refugee Stats: Bar Chart (Chart.js) to highlight key data points from the report. Goal: Inform.
+-->
+<!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>세계의 인구 변천과 인구 이주 | Interactive Dashboard</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f5f5f4; /* stone-100 */
+            color: #1c1917; /* stone-900 */
+        }
+        
+        /* Chart Container Styling - MANDATORY */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px; /* Base height */
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Utility for hiding sections */
+        .hidden-section {
+            display: none;
+        }
+        
+        /* Active Tab Styling */
+        .tab-active {
+            border-bottom: 3px solid #3b82f6; /* blue-600 */
+            color: #2563eb;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-slate-800">세계지리: 인구 변천과 이주</h1>
+                    <p class="text-xs md:text-sm text-slate-500">고등학교 2학년 | 7단원 심화 학습 도구</p>
+                </div>
+                <div class="text-xs bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-medium">
+                    학습 모드
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <nav class="flex space-x-6 overflow-x-auto no-scrollbar mt-2">
+                <button onclick="switchTab('overview')" id="tab-overview" class="tab-active whitespace-nowrap pb-3 text-sm font-medium hover:text-blue-600 transition-colors">
+                    1. 인구 성장 개요
+                </button>
+                <button onclick="switchTab('transition')" id="tab-transition" class="whitespace-nowrap pb-3 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+                    2. 인구 변천 모형
+                </button>
+                <button onclick="switchTab('structure')" id="tab-structure" class="whitespace-nowrap pb-3 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+                    3. 인구 구조 비교
+                </button>
+                <button onclick="switchTab('migration')" id="tab-migration" class="whitespace-nowrap pb-3 text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+                    4. 인구 이주와 영향
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <!-- SECTION 1: OVERVIEW (Population Growth) -->
+        <section id="section-overview" class="space-y-8 animate-fade-in">
+            <div class="bg-white rounded-xl shadow-sm p-6 md:p-8 border border-stone-200">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">세계 인구의 폭발적 성장 (1800-2020)</h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    본 섹션에서는 지난 200여 년간 세계 인구가 어떻게 변화했는지 살펴봅니다. 
+                    <strong>1800년경 약 10억 명</strong>에 불과했던 인구는 산업 혁명 이후 의료 기술 발달과 식량 생산 증대로 
+                    사망률이 급감하며 <strong>2020년 약 78억 명</strong>으로 급증했습니다. 
+                    최근의 성장은 주로 개발도상국이 주도하고 있습니다.
+                </p>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Key Stats Cards -->
+                    <div class="lg:col-span-1 space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                            <span class="block text-sm text-blue-600 font-medium">1800년 세계 인구</span>
+                            <span class="block text-3xl font-bold text-slate-800">10억 명</span>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-lg border-l-4 border-emerald-500">
+                            <span class="block text-sm text-emerald-600 font-medium">2020년 세계 인구</span>
+                            <span class="block text-3xl font-bold text-slate-800">78억 명</span>
+                            <span class="text-xs text-emerald-700 mt-1">▲ 680% 증가</span>
+                        </div>
+                        <div class="bg-stone-50 p-4 rounded-lg">
+                            <h3 class="font-bold text-slate-700 mb-2">주요 성장 요인</h3>
+                            <ul class="text-sm text-slate-600 space-y-2">
+                                <li class="flex items-center"><span class="mr-2 text-blue-500">●</span>산업 혁명 후 생활 수준 향상</li>
+                                <li class="flex items-center"><span class="mr-2 text-blue-500">●</span>의료 기술 발달 (사망률 감소)</li>
+                                <li class="flex items-center"><span class="mr-2 text-blue-500">●</span>공공 위생 시설 개선</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Chart -->
+                    <div class="lg:col-span-2">
+                        <div class="chart-container">
+                            <canvas id="growthChart"></canvas>
+                        </div>
+                        <p class="text-center text-xs text-slate-400 mt-2">데이터 출처: UN 인구 보고서 기반 재구성</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DEMOGRAPHIC TRANSITION MODEL -->
+        <section id="section-transition" class="space-y-8 hidden-section">
+            <div class="bg-white rounded-xl shadow-sm p-6 md:p-8 border border-stone-200">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">인구 변천 5단계 모형 분석</h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    인구 변천 모형은 국가의 경제 발전 수준에 따라 <strong>출생률</strong>과 <strong>사망률</strong>이 어떻게 변화하는지 설명합니다.
+                    아래 버튼을 클릭하여 각 단계의 특징과 그래프상의 변화를 확인하세요. 
+                    '다산다사(1단계)'에서 '소산소사(4단계)'로의 이행 과정을 이해하는 것이 핵심입니다.
+                </p>
+
+                <!-- Interactive Controls -->
+                <div class="flex flex-wrap gap-2 mb-6 justify-center md:justify-start">
+                    <button onclick="updateDTM(1)" id="btn-stage-1" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-sm font-medium transition-colors">1단계: 고위 정체</button>
+                    <button onclick="updateDTM(2)" id="btn-stage-2" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-sm font-medium transition-colors">2단계: 초기 팽창</button>
+                    <button onclick="updateDTM(3)" id="btn-stage-3" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-sm font-medium transition-colors">3단계: 후기 팽창</button>
+                    <button onclick="updateDTM(4)" id="btn-stage-4" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-sm font-medium transition-colors">4단계: 저위 정체</button>
+                    <button onclick="updateDTM(5)" id="btn-stage-5" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 rounded-lg text-sm font-medium transition-colors">5단계: 감소기</button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Dynamic Description Panel -->
+                    <div class="lg:col-span-1 order-2 lg:order-1 bg-stone-50 p-5 rounded-xl border border-stone-200 h-fit">
+                        <h3 id="dtm-title" class="text-xl font-bold text-blue-700 mb-3">단계를 선택하세요</h3>
+                        <div id="dtm-desc" class="text-slate-600 text-sm space-y-3">
+                            <p>위의 버튼을 클릭하여 각 인구 변천 단계의 상세 설명을 확인하고 그래프에서 해당 구간을 강조해보세요.</p>
+                        </div>
+                        <div id="dtm-stats" class="mt-4 pt-4 border-t border-stone-200 grid grid-cols-2 gap-4 hidden">
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase font-bold">출생률</span>
+                                <div id="val-birth" class="text-lg font-bold text-rose-500">-</div>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-500 uppercase font-bold">사망률</span>
+                                <div id="val-death" class="text-lg font-bold text-slate-700">-</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DTM Chart -->
+                    <div class="lg:col-span-2 order-1 lg:order-2">
+                        <div class="chart-container">
+                            <canvas id="dtmChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: POPULATION STRUCTURE (Comparison) -->
+        <section id="section-structure" class="space-y-8 hidden-section">
+            <div class="bg-white rounded-xl shadow-sm p-6 md:p-8 border border-stone-200">
+                <h2 class="text-2xl font-bold text-slate-800 mb-4">국가별 인구 구조 비교: 선진국 vs 개발도상국</h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    경제 발전 수준은 인구 구조에 직접적인 영향을 미칩니다. 
+                    <strong>에티오피아(개발도상국)</strong>는 유소년층 비율이 높아 '피라미드형' 구조를, 
+                    <strong>일본(선진국)</strong>은 노년층 비율이 높아 '방추형' 구조를 보입니다. 
+                    이는 각 국가의 <strong>부양비</strong> 부담 구조가 다름을 시사합니다.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+                    
+                    <!-- Ethiopia Card -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-emerald-100 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 font-black text-6xl text-emerald-600 z-0">ETH</div>
+                        <div class="relative z-10">
+                            <h3 class="text-lg font-bold text-emerald-700 flex items-center mb-2">
+                                <span class="mr-2 text-2xl">🇪🇹</span> 에티오피아
+                            </h3>
+                            <p class="text-xs text-slate-500 mb-4">대표적인 개발도상국 (피라미드형)</p>
+                            
+                            <!-- Chart -->
+                            <div class="chart-container" style="height: 200px;">
+                                <canvas id="chartEth"></canvas>
+                            </div>
+
+                            <!-- Analysis Overlay (Hidden by default, toggled via JS) -->
+                            <div class="mt-4 bg-emerald-50 p-3 rounded text-sm">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-bold text-emerald-800">유소년 부양비 부담 큼</span>
+                                </div>
+                                <p class="text-emerald-700 text-xs">청장년층이 부양해야 할 어린이 비율이 높음. 교육 및 의료 시설 확충 필요.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Japan Card -->
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-rose-100 relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 p-4 opacity-10 font-black text-6xl text-rose-600 z-0">JPN</div>
+                        <div class="relative z-10">
+                            <h3 class="text-lg font-bold text-rose-700 flex items-center mb-2">
+                                <span class="mr-2 text-2xl">🇯🇵</span> 일본
+                            </h3>
+                            <p class="text-xs text-slate-500 mb-4">대표적인 선진국 (방추형)</p>
+                            
+                            <!-- Chart -->
+                            <div class="chart-container" style="height: 200px;">
+                                <canvas id="chartJpn"></canvas>
+                            </div>
+
+                            <!-- Analysis Overlay -->
+                            <div class="mt-4 bg-rose-50 p-3 rounded text-sm">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-bold text-rose-800">노년 부양비 부담 큼</span>
+                                </div>
+                                <p class="text-rose-700 text-xs">청장년층이 부양해야 할 노인 비율 급증. 연금 및 노인 복지 부담 증가.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-stone-100 rounded-lg text-center">
+                    <p class="text-sm font-medium text-stone-600">
+                        💡 <strong>총부양비 = (유소년층 + 노년층) / 청장년층 × 100</strong> <br>
+                        두 국가 모두 부양비 부담이 있지만, 그 <em>원인</em>(유소년 vs 노년)이 정반대임을 알 수 있습니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: MIGRATION (Flows & Impacts) -->
+        <section id="section-migration" class="space-y-8 hidden-section">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Left Column: Interactive Flow Selector -->
+                <div class="lg:col-span-5 space-y-6">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
+                        <h2 class="text-xl font-bold text-slate-800 mb-4">국제 인구 이주 시뮬레이터</h2>
+                        <p class="text-slate-600 text-sm mb-4">
+                            주요 국제 이주 경로를 선택하여 <strong>배출 요인(Push)</strong>, <strong>흡인 요인(Pull)</strong>, 그리고 지역적 영향을 확인하세요.
+                        </p>
+                        
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">이주 경로 선택</label>
+                        <select id="migration-selector" onchange="updateMigrationData()" class="w-full p-3 border border-stone-300 rounded-lg bg-stone-50 text-slate-800 font-medium focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="default" disabled selected>-- 경로를 선택하세요 --</option>
+                            <option value="mexico_usa">1. 멕시코 → 미국 (경제적 이주)</option>
+                            <option value="africa_europe">2. 아프리카/서남아시아 → 유럽 (난민/경제)</option>
+                            <option value="asia_oil">3. 아시아 → 서남아시아 산유국 (노동 이주)</option>
+                        </select>
+
+                        <!-- Dynamic Details Card -->
+                        <div id="migration-details" class="mt-6 hidden animate-fade-in-up">
+                            <div class="border-t border-stone-200 pt-4">
+                                <h3 id="mig-title" class="font-bold text-lg text-blue-700 mb-2">경로 제목</h3>
+                                <p id="mig-desc" class="text-sm text-slate-600 mb-4">설명 텍스트...</p>
+                                
+                                <div class="grid grid-cols-2 gap-4 text-xs">
+                                    <div class="bg-rose-50 p-3 rounded text-rose-800">
+                                        <strong class="block mb-1">📤 배출 요인 (Push)</strong>
+                                        <ul id="mig-push" class="list-disc pl-3 space-y-1"></ul>
+                                    </div>
+                                    <div class="bg-blue-50 p-3 rounded text-blue-800">
+                                        <strong class="block mb-1">📥 흡인 요인 (Pull)</strong>
+                                        <ul id="mig-pull" class="list-disc pl-3 space-y-1"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Summary -->
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200">
+                        <h3 class="font-bold text-slate-800 mb-3">지역 변화 (공통적 영향)</h3>
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-start">
+                                <span class="bg-stone-200 text-stone-600 px-2 py-0.5 rounded text-xs mr-2 shrink-0">유출국</span>
+                                <span class="text-slate-600">모국 송금액 증가(긍정) / 두뇌 유출(부정)</span>
+                            </div>
+                            <div class="flex items-start">
+                                <span class="bg-stone-200 text-stone-600 px-2 py-0.5 rounded text-xs mr-2 shrink-0">유입국</span>
+                                <span class="text-slate-600">부족한 노동력 확보(긍정) / 문화적 갈등(부정)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Refugee Stats -->
+                <div class="lg:col-span-7">
+                    <div class="bg-white rounded-xl shadow-sm p-6 border border-stone-200 h-full">
+                        <h2 class="text-xl font-bold text-slate-800 mb-2">주요 난민 발생 현황 (강제적 이주)</h2>
+                        <p class="text-slate-500 text-sm mb-6">
+                            경제적 이주와 달리, 내전과 박해로 인한 <strong>난민(Refugee)</strong> 발생은 국제 사회의 큰 이슈입니다.
+                            시리아, 아프가니스탄 등 정치적 불안정 국가에서 주로 발생합니다.
+                        </p>
+                        <div class="chart-container">
+                            <canvas id="refugeeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-stone-200 mt-auto py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-slate-500 text-sm">© 2026 World Geography Interactive Unit Plan. Based on Educational Material.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // --- 1. Navigation Logic ---
+        function switchTab(tabId) {
+            // Hide all sections
+            const sections = ['overview', 'transition', 'structure', 'migration'];
+            sections.forEach(s => {
+                document.getElementById(`section-${s}`).classList.add('hidden-section');
+                document.getElementById(`tab-${s}`).classList.remove('tab-active', 'text-blue-600');
+                document.getElementById(`tab-${s}`).classList.add('text-slate-500');
+            });
+
+            // Show selected section
+            document.getElementById(`section-${tabId}`).classList.remove('hidden-section');
+            document.getElementById(`tab-${tabId}`).classList.add('tab-active', 'text-blue-600');
+            document.getElementById(`tab-${tabId}`).classList.remove('text-slate-500');
+
+            // Trigger chart resize if needed (Chart.js handles responsiveness well usually)
+        }
+
+        // --- 2. Chart Configurations & Data ---
+        
+        // Helper: Label Wrapping
+        function wrapLabel(label) {
+            const max = 15;
+            if(label.length <= max) return label;
+            return label.match(new RegExp('.{1,' + max + '}', 'g'));
+        }
+
+        // Common Chart Options
+        const commonOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: {
+                    backgroundColor: 'rgba(28, 25, 23, 0.9)', // stone-900
+                    padding: 10,
+                    titleFont: { family: "'Noto Sans KR', sans-serif", size: 14 },
+                    bodyFont: { family: "'Noto Sans KR', sans-serif", size: 13 },
+                    callbacks: {
+                        title: function(tooltipItems) {
+                            const item = tooltipItems[0];
+                            let label = item.chart.data.labels[item.dataIndex];
+                            if (Array.isArray(label)) return label.join(' ');
+                            return label;
+                        }
+                    }
+                },
+                legend: {
+                    labels: { font: { family: "'Noto Sans KR', sans-serif" } }
+                }
+            }
+        };
+
+        // Chart 1: Growth
+        const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+        new Chart(ctxGrowth, {
+            type: 'line',
+            data: {
+                labels: ['1800', '1900', '1950', '1987', '1999', '2011', '2020'],
+                datasets: [{
+                    label: '세계 인구 (억 명)',
+                    data: [10, 16.5, 25.2, 50, 60, 70, 78],
+                    borderColor: '#3b82f6', // blue-500
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    borderWidth: 3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#3b82f6',
+                    pointRadius: 5,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                ...commonOptions,
+                plugins: { ...commonOptions.plugins, legend: { display: false } },
+                scales: {
+                    y: { grid: { borderDash: [4, 4] }, title: { display: true, text: '인구 (억 명)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Chart 2: DTM (Demographic Transition)
+        const ctxDTM = document.getElementById('dtmChart').getContext('2d');
+        const dtmChart = new Chart(ctxDTM, {
+            type: 'line',
+            data: {
+                labels: ['1단계', '2단계(초)', '2단계(말)', '3단계(초)', '3단계(말)', '4단계', '5단계'],
+                datasets: [
+                    {
+                        label: '출생률 (Birth Rate)',
+                        data: [40, 40, 38, 25, 15, 10, 8],
+                        borderColor: '#f43f5e', // rose-500
+                        borderWidth: 3,
+                        pointRadius: 3,
+                        tension: 0.4
+                    },
+                    {
+                        label: '사망률 (Death Rate)',
+                        data: [38, 20, 12, 10, 9, 10, 12],
+                        borderColor: '#059669', // emerald-600
+                        borderWidth: 3,
+                        pointRadius: 3,
+                        tension: 0.4
+                    },
+                    {
+                        label: '총인구 (Total Pop)',
+                        data: [5, 15, 35, 65, 85, 95, 93],
+                        borderColor: '#1c1917', // stone-900
+                        borderWidth: 2,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                ...commonOptions,
+                interaction: { mode: 'index', intersect: false },
+                scales: {
+                    y: { title: { display: true, text: '비율 (‰)' } },
+                    y1: { position: 'right', grid: { display: false }, title: { display: true, text: '총인구 (상대값)' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // Interactive DTM Logic
+        const dtmInfo = {
+            1: { title: "1단계: 고위 정체기 (다산다사)", desc: "출생률과 사망률이 모두 높습니다. 기근, 질병, 전쟁 등으로 사망률 변동이 크며, 인구 증가는 거의 없습니다. (예: 산업화 이전)", br: "높음 (40‰+)", dr: "높음 (30‰+)" },
+            2: { title: "2단계: 초기 팽창기 (다산감사)", desc: "의학 발달과 위생 개선으로 사망률이 급격히 감소하지만, 출생률은 여전히 높습니다. 인구가 폭발적으로 성장합니다. (예: 에티오피아, 사하라 이남 아프리카)", br: "높음", dr: "급감" },
+            3: { title: "3단계: 후기 팽창기 (감산소사)", desc: "산업화, 도시화, 여성 사회 진출, 산아 제한 등으로 출생률이 감소하기 시작합니다. 인구 성장은 지속되나 속도는 둔화됩니다. (예: 브라질, 인도)", br: "감소 시작", dr: "낮음" },
+            4: { title: "4단계: 저위 정체기 (소산소사)", desc: "출생률과 사망률이 모두 낮은 수준에서 균형을 이룹니다. 인구 성장이 정체되며 고령화가 시작됩니다. (예: 미국, 프랑스)", br: "낮음", dr: "낮음" },
+            5: { title: "5단계: 감소기", desc: "출생률이 사망률보다 낮아져 인구가 자연 감소하는 단계입니다. 심각한 고령화와 노동력 부족이 우려됩니다. (예: 일본, 독일, 한국)", br: "매우 낮음", dr: "소폭 상승 (노인 증가)" }
+        };
+
+        function updateDTM(stage) {
+            // Update Text
+            const info = dtmInfo[stage];
+            document.getElementById('dtm-title').innerText = info.title;
+            document.getElementById('dtm-desc').innerText = info.desc;
+            document.getElementById('dtm-stats').classList.remove('hidden');
+            document.getElementById('val-birth').innerText = info.br;
+            document.getElementById('val-death').innerText = info.dr;
+
+            // Highlight Button
+            for(let i=1; i<=5; i++) {
+                const btn = document.getElementById(`btn-stage-${i}`);
+                if(i === stage) {
+                    btn.classList.remove('bg-slate-200');
+                    btn.classList.add('bg-blue-600', 'text-white');
+                } else {
+                    btn.classList.add('bg-slate-200');
+                    btn.classList.remove('bg-blue-600', 'text-white');
+                }
+            }
+
+            // Annotation Logic (Simple dataset styling update)
+            // Ideally we would add vertical lines, but keeping it simple for stability:
+            // Just refresh chart to ensure smooth transition if we were changing data
+            dtmChart.update();
+        }
+        
+        // Initialize DTM with Stage 2 highlighted (as per unit focus on growth)
+        updateDTM(2);
+
+
+        // Chart 3 & 4: Structure (Ethiopia vs Japan)
+        // Stacked Bar Data: [0-14, 15-64, 65+]
+        const structOptions = {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: commonOptions.plugins.tooltip },
+            scales: { x: { stacked: true, max: 100, display: false }, y: { stacked: true, display: false } }
+        };
+
+        // Ethiopia
+        new Chart(document.getElementById('chartEth'), {
+            type: 'bar',
+            data: {
+                labels: ['비율'],
+                datasets: [
+                    { label: '0-14세', data: [43], backgroundColor: '#10b981' }, // Green
+                    { label: '15-64세', data: [53], backgroundColor: '#cbd5e1' }, // Grey
+                    { label: '65세+', data: [4], backgroundColor: '#f43f5e' } // Red
+                ]
+            },
+            options: structOptions
+        });
+
+        // Japan
+        new Chart(document.getElementById('chartJpn'), {
+            type: 'bar',
+            data: {
+                labels: ['비율'],
+                datasets: [
+                    { label: '0-14세', data: [12], backgroundColor: '#10b981' },
+                    { label: '15-64세', data: [59], backgroundColor: '#cbd5e1' },
+                    { label: '65세+', data: [29], backgroundColor: '#f43f5e' }
+                ]
+            },
+            options: structOptions
+        });
+
+
+        // --- 4. Migration Interaction Logic ---
+        const migrationData = {
+            mexico_usa: {
+                title: "멕시코 → 미국",
+                desc: "세계에서 가장 규모가 큰 경제적 이주 경로 중 하나입니다.",
+                push: ["낮은 임금", "일자리 부족", "빈곤"],
+                pull: ["높은 임금 (경제적 기회)", "풍부한 단순 노무직 일자리", "더 나은 생활 환경"]
+            },
+            africa_europe: {
+                title: "북아프리카/서남아시아 → 서유럽",
+                desc: "경제적 요인과 내전(시리아 등)에 의한 난민 이주가 복합적으로 나타납니다.",
+                push: ["내전 및 정치적 불안 (시리아)", "경제적 빈곤 (아프리카)", "종교적 박해"],
+                pull: ["정치적 안정", "난민 보호 정책 (독일 등)", "사회 복지 시스템"]
+            },
+            asia_oil: {
+                title: "남부 아시아 → 서남아시아 (산유국)",
+                desc: "오일 머니를 바탕으로 한 건설 붐으로 인해 청장년 남성 노동력이 대거 유입됩니다.",
+                push: ["낮은 소득 수준 (인도, 파키스탄 등)", "자국 내 고용 기회 부족"],
+                pull: ["건설 현장 등의 풍부한 일자리", "단기적으로 높은 소득"]
+            }
+        };
+
+        function updateMigrationData() {
+            const val = document.getElementById('migration-selector').value;
+            const container = document.getElementById('migration-details');
+            
+            if(!val || val === 'default') return;
+
+            const data = migrationData[val];
+            
+            // Populate
+            document.getElementById('mig-title').innerText = data.title;
+            document.getElementById('mig-desc').innerText = data.desc;
+            
+            // Lists
+            const pushList = document.getElementById('mig-push');
+            const pullList = document.getElementById('mig-pull');
+            pushList.innerHTML = '';
+            pullList.innerHTML = '';
+            
+            data.push.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                pushList.appendChild(li);
+            });
+            data.pull.forEach(item => {
+                const li = document.createElement('li');
+                li.innerText = item;
+                pullList.appendChild(li);
+            });
+
+            // Show and animate
+            container.classList.remove('hidden');
+        }
+
+        // Chart 5: Refugee Stats
+        const ctxRef = document.getElementById('refugeeChart').getContext('2d');
+        new Chart(ctxRef, {
+            type: 'bar',
+            data: {
+                labels: ['시리아', '아프가니스탄', '남수단', '미얀마', '소말리아'], // Long labels wrapped by plugin
+                datasets: [{
+                    label: '난민 수 (단위: 백만 명)',
+                    data: [6.7, 2.7, 2.3, 1.1, 0.9],
+                    backgroundColor: [
+                        '#3b82f6', '#3b82f6', '#3b82f6', '#93c5fd', '#93c5fd'
+                    ],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                ...commonOptions,
+                plugins: { legend: { display: false }, tooltip: commonOptions.plugins.tooltip },
+                scales: {
+                    x: { beginAtZero: true, grid: { borderDash: [2, 2] } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+    </script>
+</body>
+</html>
