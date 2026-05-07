@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2026학년도 3월 모의고사 정답표</title>
+    <title>2026학년도 5월 모의고사 정답표</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
@@ -21,8 +21,8 @@
     <div class="max-w-6xl mx-auto">
         <!-- Header -->
         <header class="text-center mb-8 bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-slate-200">
-            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">2026학년도 3월 전국연합학력평가</h1>
-            <p class="text-slate-500 text-lg">서령고 학생들 수고했습니다!</p>
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-3">2026학년도 5월 전국연합학력평가</h1>
+            <p class="text-slate-500 text-lg">전 과목 영역별 정답표 by 서령고 3학년부</p>
         </header>
 
         <!-- Navigation Tabs -->
@@ -37,58 +37,62 @@
     </div>
 
     <script>
-        // 검증된 전체 원본 데이터 (Raw Data)
+        // 추출된 정답 데이터로 업데이트
         const examData = {
             "korean": {
                 title: "국어 영역",
                 sections: [
-                    { name: "공통", start: 1, answers: [5,4,2,5,1, 1,3,3,2,4, 2,3,2,5,1, 4,1,1,3,5, 5,4,5,3,3, 5,1,4,2,3, 2,4,1,2] },
-                    { name: "화법과 작문", start: 35, answers: [1,5,4,5,3, 4,4,3,2,5, 4] },
-                    { name: "언어와 매체", start: 35, answers: [2,5,4,3,1, 4,2,5,4,3, 3] }
+                    { name: "공통", start: 1, answers: [1, 3, 2, 4, 5, 2, 2, 3, 3, 5, 3, 3, 2, 4, 3, 4, 1, 3, 3, 4, 4, 1, 3, 5, 2, 1, 5, 2, 2, 5, 1, 4, 5, 2] },
+                    { name: "화법과 작문", start: 35, answers: [2, 5, 5, 5, 4, 5, 1, 4, 2, 3, 5] },
+                    { name: "언어와 매체", start: 35, answers: [2, 5, 1, 4, 2, 5, 4, 3, 4, 5, 4] }
                 ]
             },
             "math": {
                 title: "수학 영역",
                 sections: [
-                    { name: "공통", start: 1, answers: [3,5,1,2,5, 4,4,1,3,2, 5,1,5,2,3, 30,15,124,14,67, 48,80] },
-                    { name: "확률과 통계", start: 23, answers: [2,4,1,3,5, 3,864,100] },
-                    { name: "미적분", start: 23, answers: [3,4,1,2,5, 3,11,57] },
-                    { name: "기하", start: 23, answers: [1,3,2,4,5, 3,12,52] }
+                    { name: "공통", start: 1, answers: [4, 5, 3, 5, 1, 1, 5, 3, 1, 2, 4, 2, 2, 3, 5, 24, 140, 8, 10, 155, 55, 9] },
+                    { name: "확률과 통계", start: 23, answers: [3, 4, 1, 5, 2, 1, 68, 398] },
+                    { name: "미적분", start: 23, answers: [1, 5, 3, 4, 2, 5, 17, 31] },
+                    { name: "기하", start: 23, answers: [3, 2, 3, 1, 5, 2, 9, 80] }
                 ]
             },
             "english": {
                 title: "영어 영역",
                 sections: [
-                    { name: "공통", start: 1, answers: [1,5,1,4,3, 4,5,4,4,1, 2,2,5,3,2, 3,4,1,1,1, 3,5,1,1,2, 5,5,5,4,2, 5,2,3,3,3, 4,2,3,5,2, 1,4,2,3,4] }
+                    { name: "공통", start: 1, answers: [4, 4, 3, 5, 3, 3, 1, 5, 5, 4, 1, 4, 2, 5, 5, 3, 5, 5, 1, 5, 3, 1, 2, 1, 4, 4, 5, 3, 5, 5, 2, 2, 2, 4, 3, 3, 2, 2, 4, 1, 3, 5, 4, 5, 4] }
                 ]
             },
             "history": {
                 title: "한국사 영역",
                 sections: [
-                    { name: "공통", start: 1, answers: [2,4,2,1,1, 4,1,1,4,5, 3,2,5,4,5, 1,5,3,3,4] }
+                    { name: "공통", start: 1, answers: [1, 5, 3, 3, 4, 2, 4, 5, 4, 4, 1, 3, 3, 2, 5, 1, 4, 3, 5, 2] }
                 ]
             },
             "social": {
                 title: "사회탐구 영역",
                 sections: [
-                    { name: "생활과 윤리", start: 1, answers: [4,5,3,3,3, 2,1,1,1,3, 3,2,5,2,4, 5,4,1,2,1] },
-                    { name: "윤리와 사상", start: 1, answers: [5,2,3,5,5, 4,4,2,1,3, 1,2,2,3,3, 3,1,4,4,4] },
-                    { name: "한국지리", start: 1, answers: [2,3,3,2,2, 1,5,5,3,4, 5,3,4,5,2, 1,4,1,1,3] },
-                    { name: "세계지리", start: 1, answers: [3,3,1,3,4, 5,2,3,4,2, 5,3,1,4,1, 4,1,5,2,1] },
-                    { name: "동아시아사", start: 1, answers: [4,3,2,2,4, 4,3,3,2,3, 1,2,1,1,3, 4,5,1,5,5] },
-                    { name: "세계사", start: 1, answers: [2,5,2,5,5, 4,3,5,3,4, 3,4,3,1,1, 1,2,4,5,4] },
-                    { name: "경제", start: 1, answers: [2,4,3,3,5, 2,5,4,1,5, 1,5,3,3,4, 2,5,4,4,1] },
-                    { name: "정치와 법", start: 1, answers: [5,3,2,5,1, 3,3,4,2,5, 2,4,4,1,1, 4,5,5,1,4] },
-                    { name: "사회·문화", start: 1, answers: [4,1,4,2,3, 1,5,5,3,5, 4,5,4,3,1, 5,3,2,3,2] }
+                    { name: "생활과 윤리", start: 1, answers: [2, 2, 5, 1, 3, 1, 5, 2, 3, 4, 3, 2, 1, 5, 3, 4, 3, 3, 4, 4] },
+                    { name: "윤리와 사상", start: 1, answers: [2, 5, 1, 1, 5, 4, 4, 3, 3, 2, 3, 4, 5, 2, 4, 3, 5, 1, 4, 5] },
+                    { name: "한국지리", start: 1, answers: [1, 2, 5, 2, 4, 3, 3, 4, 3, 4, 3, 2, 3, 1, 5, 2, 5, 5, 4, 1] },
+                    { name: "세계지리", start: 1, answers: [1, 3, 2, 5, 3, 2, 1, 5, 4, 3, 2, 3, 3, 1, 4, 5, 2, 4, 4, 2] },
+                    { name: "동아시아사", start: 1, answers: [2, 3, 2, 4, 4, 4, 5, 1, 3, 4, 3, 5, 1, 5, 5, 4, 2, 1, 5, 2] },
+                    { name: "세계사", start: 1, answers: [1, 5, 3, 1, 3, 2, 1, 4, 5, 3, 5, 1, 4, 5, 2, 4, 1, 2, 4, 5] },
+                    { name: "경제", start: 1, answers: [2, 2, 5, 5, 3, 2, 1, 5, 4, 3, 3, 1, 4, 2, 4, 3, 3, 1, 4, 5] },
+                    { name: "정치와 법", start: 1, answers: [5, 2, 4, 1, 1, 1, 4, 5, 2, 4, 4, 3, 3, 5, 4, 1, 2, 3, 5, 5] },
+                    { name: "사회·문화", start: 1, answers: [4, 4, 1, 1, 2, 5, 5, 4, 5, 4, 5, 1, 2, 3, 4, 3, 2, 5, 3, 2] }
                 ]
             },
             "science": {
                 title: "과학탐구 영역",
                 sections: [
-                    { name: "물리학 I", start: 1, answers: [3,1,4,5,3, 1,2,3,4,5, 3,2,4,5,3, 1,2,1,4,5] },
-                    { name: "화학 I", start: 1, answers: [1,5,4,3,2, 3,4,2,5,3, 4,2,1,4,5, 2,1,5,3,2] },
-                    { name: "생명과학 I", start: 1, answers: [5,4,2,2,4, 3,3,4,4,3, 1,5,2,5,2, 5,1,3,5,1] },
-                    { name: "지구과학 I", start: 1, answers: [1,3,4,5,3, 1,3,2,5,4, 5,2,1,5,4, 3,2,2,1,5] }
+                    { name: "물리학 I", start: 1, answers: [3, 4, 5, 2, 3, 2, 2, 1, 4, 1, 5, 2, 5, 2, 5, 1, 3, 5, 1, 4] },
+                    { name: "화학 I", start: 1, answers: [4, 4, 5, 3, 2, 1, 2, 5, 2, 3, 4, 3, 3, 5, 2, 1, 2, 5, 1, 4] },
+                    { name: "생명과학 I", start: 1, answers: [5, 3, 5, 4, 3, 2, 4, 5, 4, 1, 3, 2, 1, 5, 1, 4, 2, 5, 1, 3] },
+                    { name: "지구과학 I", start: 1, answers: [5, 5, 3, 1, 3, 2, 2, 4, 5, 5, 1, 3, 3, 5, 3, 2, 4, 2, 4, 1] },
+                    { name: "물리학 II", start: 1, answers: [4, 5, 1, 5, 4, 1, 5, 2, 3, 1, 1, 2, 5, 3, 3, 4, 2, 3, 4, 5] },
+                    { name: "화학 II", start: 1, answers: [4, 2, 1, 3, 5, 3, 1, 5, 4, 2, 2, 3, 1, 2, 5, 5, 4, 5, 4, 3] },
+                    { name: "생명과학 II", start: 1, answers: [1, 5, 3, 4, 2, 3, 5, 4, 1, 2, 4, 5, 1, 5, 4, 1, 3, 2, 3, 2] },
+                    { name: "지구과학 II", start: 1, answers: [3, 4, 2, 5, 3, 3, 1, 5, 1, 4, 5, 1, 1, 4, 3, 5, 2, 2, 3, 1] }
                 ]
             }
         };
@@ -115,7 +119,6 @@
             
             section.answers.forEach((answer, index) => {
                 const questionNum = section.start + index;
-                // 주관식 대비 폰트 사이즈 조절
                 const textSize = String(answer).length > 1 ? 'text-lg md:text-xl' : 'text-2xl';
                 
                 html += `
@@ -192,4 +195,3 @@
     </script>
 </body>
 </html>
-```
